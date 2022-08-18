@@ -220,19 +220,19 @@ function Blog() {
 
       {/* like, post and view comments section */}
       <div className="bg-white mt-24 sm:mt-0 text-black pl-8 pr-2 md:px-12 py-3 rounded-lg">
-        <div className="flex items-center gap-1 sm:gap-4 mb-3">
-          {/* like post */}
-          <div onClick={likePost} className="cursor-pointer">
-            {hasLiked ? (
-              <FaHeart className="text-red-500 w-8 h-8" />
-            ) : (
-              <FaRegHeart className="w-8 h-8" />
-            )}
-          </div>
+        {user && (
+          <div className="flex items-center gap-1 sm:gap-4 mb-3">
+            {/* like post */}
+            <div onClick={likePost} className="cursor-pointer">
+              {hasLiked ? (
+                <FaHeart className="text-red-500 w-8 h-8" />
+              ) : (
+                <FaRegHeart className="w-8 h-8" />
+              )}
+            </div>
 
-          {/* comments section  */}
-          <div className="p-2 rounded-full shadow-lg border border-gray-300">
-            {user && (
+            {/* comments section  */}
+            <div className="p-2 rounded-full shadow-lg border border-gray-300">
               <>
                 <input
                   placeholder="comment"
@@ -251,11 +251,12 @@ function Blog() {
                   Post
                 </button>
               </>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* View all comments */}
+        <h1 className="my-2">Comments</h1>
         {comments.length > 0 && (
           <div className="ml-2  sm:ml-10">
             {comments.map((comment) => {

@@ -69,10 +69,14 @@ function Slide({ slide, offset }) {
   const active = offset === 0 ? true : null;
   const ref = useTilt(active);
 
+  const navigate = useNavigate();
   return (
     <div
+      onClick={() =>
+        navigate("/blog", { state: { data: slide.data(), id: slide.id } })
+      }
       ref={ref}
-      className="slide"
+      className="slide cursor-pointer"
       data-active={active}
       style={{
         "--offset": offset,
@@ -88,13 +92,15 @@ function Slide({ slide, offset }) {
       <div
         className="slideContent"
         style={{
-          backgroundImage: `url('${slide.verticalPoster}')`,
+          backgroundImage: `url('${slide.data().verticalPoster}')`,
         }}
       >
         <div className="slideContentInner">
-          <h2 className="slideTitle">{slide.moviename}</h2>
+          <h2 className="slideTitle">{slide.data().moviename}</h2>
           {/* <h3 className="slideSubtitle">{slide.subtitle}</h3> */}
-          <p className="slideDescription line-clamp-2">{slide.details}</p>
+          <p className="slideDescription line-clamp-2">
+            {slide.data().details}
+          </p>
         </div>
       </div>
     </div>
@@ -104,7 +110,6 @@ function Slide({ slide, offset }) {
 function PopularBlogs({ posts }) {
   const [state, dispatch] = React.useReducer(slidesReducer, initialState);
 
-  const navigate = useNavigate();
   const popularData = posts.slice(0, size);
   // console.log(popularData);
 
@@ -114,16 +119,7 @@ function PopularBlogs({ posts }) {
 
       {[...popularData, ...popularData, ...popularData].map((slide, i) => {
         let offset = popularData.length + (state.slideIndex - i);
-        return (
-          <Slide
-            slide={slide.data()}
-            offset={offset}
-            key={i}
-            onClick={() =>
-              navigate("/blog", { state: { data: slide.data(), id: slide.id } })
-            }
-          />
-        );
+        return <Slide slide={slide} offset={offset} key={i} />;
       })}
       <button onClick={() => dispatch({ type: "PREV" })}>›</button>
     </div>
