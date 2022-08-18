@@ -17,7 +17,7 @@ export default function HeroSection() {
         <div className="absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-20 flex flex-col items-center pr-14 justify-center text-white pb-4">
           <GlitchClip>
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-extrabold">
-              CYPER PUNK
+              CYBER PUNK
             </h1>
           </GlitchClip>
           <Typed
