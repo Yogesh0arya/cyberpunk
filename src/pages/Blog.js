@@ -170,7 +170,7 @@ function Blog() {
             <div className="h-full w-full text-white font-changa bg-gradient-to-tr from-orange-200 via-pink-700 to-blue-900 ">
               <GlitchText>
                 <h1 className="py-1 sm:py-4 px-3 sm:px-8 text-xl md:text-4xl mb-1 sm:mb-2 font-bold bg-white text-blue-700 font-orbitron">
-                  STORY
+                  Director
                 </h1>
               </GlitchText>
               <p className="px-3 sm:px-8  line-clamp-[8] lg:line-clamp-[14]">
