@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
 import "./PopularBlogs.scss";
+import { useNavigate } from "react-router-dom";
 
-const size = 2;
+const size = 3;
 
 function useTilt(active) {
   const ref = React.useRef(null);
@@ -103,8 +104,9 @@ function Slide({ slide, offset }) {
 function PopularBlogs({ posts }) {
   const [state, dispatch] = React.useReducer(slidesReducer, initialState);
 
+  const navigate = useNavigate();
   const popularData = posts.slice(0, size);
-  console.log(popularData);
+  // console.log(popularData);
 
   return (
     <div className="slides">
@@ -112,7 +114,16 @@ function PopularBlogs({ posts }) {
 
       {[...popularData, ...popularData, ...popularData].map((slide, i) => {
         let offset = popularData.length + (state.slideIndex - i);
-        return <Slide slide={slide.data()} offset={offset} key={i} />;
+        return (
+          <Slide
+            slide={slide.data()}
+            offset={offset}
+            key={i}
+            onClick={() =>
+              navigate("/blog", { state: { data: slide.data(), id: slide.id } })
+            }
+          />
+        );
       })}
       <button onClick={() => dispatch({ type: "PREV" })}>›</button>
     </div>

@@ -18,7 +18,7 @@ import { Fab, Action } from "react-tiny-fab";
 import "react-tiny-fab/dist/styles.css";
 import { FaBeer } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { FaHeart, FaPlus } from "react-icons/fa";
+import { FaHeart, FaPlus, FaRegHeart } from "react-icons/fa";
 
 function Blog() {
   const [user] = useAuthState(auth);
@@ -97,7 +97,7 @@ function Blog() {
   );
 
   return (
-    <div className="grid gap-3 pt-24 pb-24 px-3 md:px-12 bg-black">
+    <div className="grid gap-3 pt-24 px-3 md:px-12 bg-black">
       {/* Top Poster */}
       <div className="h-[200px] md:h-[400px] xl:h-[600px] relative">
         <div className="absolute w-full h-full bg-pink-900 rounded-b-md" />
@@ -194,74 +194,97 @@ function Blog() {
       </div>
 
       {/* floating like comment button */}
-      <Fab
-        alwaysShowTitle={true}
-        icon={<FaPlus />}
-        mainButtonStyles={{ backgroundColor: "red" }}
-        actionButtonStyles={{ backgroundColor: "blue" }}
-      >
-        <Action
-          style={{ marginTop: "10px" }}
-          onClick={() => console.log("fire")}
+      {user && (
+        <Fab
+          alwaysShowTitle={true}
+          icon={<FaPlus />}
+          mainButtonStyles={{ backgroundColor: "red" }}
+          actionButtonStyles={{ backgroundColor: "blue" }}
         >
-          🔥
-        </Action>
+          <Action
+            style={{ marginTop: "10px" }}
+            onClick={() => console.log("fire")}
+          >
+            🔥
+          </Action>
 
-        <Action onClick={likePost} text="Like">
-          {hasLiked ? <FaHeart className="text-red-500" /> : <FaHeart />}
-        </Action>
+          <Action onClick={likePost} text="Like">
+            {hasLiked ? <FaHeart className="text-red-500" /> : <FaHeart />}
+          </Action>
 
-        <Action text="Down" onClick={() => console.log("Down")}>
-          👎
-        </Action>
-      </Fab>
-      {/* like post */}
-      <div onClick={likePost} className="cursor-pointer">
-        {hasLiked ? (
-          <FaHeart className="text-red-500 w-12 h-12" />
-        ) : (
-          <FaHeart className="w-12 h-12 text-white" />
-        )}
-      </div>
+          {/* <Action text="Down" onClick={() => console.log("Down")}>
+            👎
+          </Action> */}
+        </Fab>
+      )}
 
-      {/* comments section  */}
-      <input
-        placeholder="comment"
-        type="text"
-        value={comment}
-        className=""
-        onChange={(e) => setComment(e.target.value)}
-      />
-      <button
-        className="bg-white"
-        type="submit"
-        disabled={!comment.trim()}
-        onClick={sendComment}
-      >
-        Post
-      </button>
+      {/* like, post and view comments section */}
+      <div className="bg-white mt-24 sm:mt-0 text-black pl-8 pr-2 md:px-12 py-3 rounded-lg">
+        <div className="flex items-center gap-1 sm:gap-4 mb-3">
+          {/* like post */}
+          <div onClick={likePost} className="cursor-pointer">
+            {hasLiked ? (
+              <FaHeart className="text-red-500 w-8 h-8" />
+            ) : (
+              <FaRegHeart className="w-8 h-8" />
+            )}
+          </div>
 
-      {comments.length > 0 && (
-        <div className=" text-white ml-10">
-          {comments.map((comment) => {
-            return (
-              <div key={comment.id} className="flex gap-2 items-center mb-3">
-                <img
-                  className="h-7 w-7 rounded-full"
-                  src={comment.data().profileImg}
-                  referrerPolicy="no-referrer"
+          {/* comments section  */}
+          <div className="p-2 rounded-full shadow-lg border border-gray-300">
+            {user && (
+              <>
+                <input
+                  placeholder="comment"
+                  type="text"
+                  value={comment}
+                  className="outline-none w-48 sm:w-auto pr-1"
+                  onChange={(e) => setComment(e.target.value)}
                 />
 
-                <p className="flex-1">
-                  <span className="font-bold ">{comment.data().username} </span>
-                  {comment.data().comment}
-                </p>
-                <Moment fromNow>{comment.data().timestamp?.toDate()}</Moment>
-              </div>
-            );
-          })}
+                <button
+                  className="bg-black text-white px-2 sm:px-4 py-1 rounded-full"
+                  type="submit"
+                  disabled={!comment.trim()}
+                  onClick={sendComment}
+                >
+                  Post
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* View all comments */}
+        {comments.length > 0 && (
+          <div className="ml-2  sm:ml-10">
+            {comments.map((comment) => {
+              return (
+                <div
+                  key={comment.id}
+                  className="flex gap-2 items-center mb-3 md:pr-8"
+                >
+                  <img
+                    className="h-7 w-7 rounded-full"
+                    src={comment.data().profileImg}
+                    referrerPolicy="no-referrer"
+                  />
+
+                  <p className="flex-1">
+                    <span className="font-bold text-xs sm:text-base">
+                      {comment.data().username}{" "}
+                    </span>
+                    {comment.data().comment}
+                  </p>
+                  <Moment fromNow style={{ fontSize: "0.8rem" }}>
+                    {comment.data().timestamp?.toDate()}
+                  </Moment>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
