@@ -14,9 +14,11 @@ export default function HeroSection() {
     <>
       <div className="relative h-screen w-full overflow-hidden">
         <DynamicBg className="absolute top-0 bottom-0 left-0 right-0 z-0" />
-        <div className="absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-20 flex flex-col items-center justify-end md:justify-center text-white pb-4">
+        <div className="absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-20 flex flex-col items-center pr-14 justify-center text-white pb-4">
           <GlitchClip>
-            <h1 className="text-4xl md:text-8xl font-extrabold">CYPER PUNK</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-extrabold">
+              CYPER PUNK
+            </h1>
           </GlitchClip>
           <Typed
             strings={[
