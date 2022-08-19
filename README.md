@@ -8,6 +8,7 @@ CYPER PUNK is the blogging website build using reactjs, tailwind css, firebase.
 
 - Sigup with google
 - Add posts
+- Update posts
 - Add comments
 - Like post
 - fully responsive
