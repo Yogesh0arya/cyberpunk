@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
+import EditPost from "./pages/EditPost";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="profile" element={<Profile />} />
         <Route path="about" element={<About />} />
         <Route path="blog" element={<Blog />} />
+        <Route path="editpost" element={<EditPost />} />
       </Routes>
     </div>
   );

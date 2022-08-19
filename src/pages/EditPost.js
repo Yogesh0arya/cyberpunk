@@ -5,14 +5,35 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { storage, db, auth } from "../Firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { ref, getDownloadURL, uploadString } from "firebase/storage";
+import {
+  ref,
+  getDownloadURL,
+  uploadString,
+  deleteObject,
+} from "firebase/storage";
 import { CgAdd } from "react-icons/cg";
 import AllPosts from "../components/AllPosts";
+import { useLocation } from "react-router-dom";
+import { FaTimes } from "react-icons/fa";
 
-function MyPosts() {
+function EditPost() {
+  const { state } = useLocation();
+
+  const {
+    moviename,
+    details,
+    story,
+    director,
+    horizontalPoster,
+    verticalPoster,
+    storyPic,
+    directorPic,
+  } = state.data;
+  const id = state.id;
+
   // file picker ref
   const horizontalPosterRef = useRef(null);
   const verticalPosterRef = useRef(null);
@@ -21,10 +42,10 @@ function MyPosts() {
 
   // handle input fields
   const [userInput, setUserInput] = useState({
-    moviename: "",
-    details: "",
-    story: "",
-    director: "",
+    moviename: moviename,
+    details: details,
+    story: story,
+    director: director,
   });
 
   const handeInput = (e) => {
@@ -38,12 +59,20 @@ function MyPosts() {
 
   // handle file picker
   const [selectedFile, setSelectedFile] = useState({
-    horizontalPoster: null,
-    verticalPoster: null,
-    storyPic: null,
-    directorPic: null,
+    horizontalPoster: horizontalPoster,
+    verticalPoster: verticalPoster,
+    storyPic: storyPic,
+    directorPic: directorPic,
   });
-  const addImageToPost = (e) => {
+
+  const [change, setChange] = useState({
+    horizontalPoster: false,
+    verticalPoster: false,
+    storyPic: false,
+    directorPic: false,
+  });
+
+  const addImageToPost = async (e) => {
     const name = e.target.name;
     const reader = new FileReader();
     if (e.target.files[0]) {
@@ -53,6 +82,8 @@ function MyPosts() {
     reader.onload = (readerEvent) => {
       setSelectedFile({ ...selectedFile, [name]: readerEvent.target.result });
     };
+
+    setChange({ ...change, [name]: true });
   };
 
   // upload post to firebase
@@ -63,87 +94,74 @@ function MyPosts() {
 
     setLoading(true);
 
-    // 1) create a post a add to firestore 'posts' collection
-    // 2) get the post id for newly created post
-    // 3) upload the images to firebase storage with newly created post id
-    // 4) get a download url from firebase storage and update to original post with image
-
-    // 1,2
-    const docRef = await addDoc(collection(db, "posts"), {
-      // data to push
-      username: user?.displayName,
-      profileImg: user?.photoURL,
+    await updateDoc(doc(db, "posts", id), {
       moviename: userInput.moviename,
       details: userInput.details,
       story: userInput.story,
       director: userInput.director,
-      userId: user.uid,
-      timestamp: serverTimestamp(),
     });
 
-    console.log("new doc added with id", docRef.id);
-
-    // 3
-    const imageRef1 = ref(storage, `posts/${docRef.id}/horizontalPoster`);
-    await uploadString(
-      imageRef1,
-      selectedFile.horizontalPoster,
-      "data_url"
-    ).then(async () => {
-      // 4
-      const downloadURL = await getDownloadURL(imageRef1);
-      await updateDoc(doc(db, "posts", docRef.id), {
-        horizontalPoster: downloadURL,
-      });
-    });
-
-    const imageRef2 = ref(storage, `posts/${docRef.id}/verticalPoster`);
-    await uploadString(imageRef2, selectedFile.verticalPoster, "data_url").then(
-      async () => {
-        // 4
-        const downloadURL = await getDownloadURL(imageRef2);
-        await updateDoc(doc(db, "posts", docRef.id), {
-          verticalPoster: downloadURL,
-        });
-      }
-    );
-
-    const imageRef3 = ref(storage, `posts/${docRef.id}/storyPic`);
-    await uploadString(imageRef3, selectedFile.storyPic, "data_url").then(
-      async () => {
+    if (change.horizontalPoster) {
+      const imageRef3 = ref(storage, `posts/${id}/horizontalPoster`);
+      deleteObject(imageRef3);
+      await uploadString(
+        imageRef3,
+        selectedFile.horizontalPoster,
+        "data_url"
+      ).then(async () => {
         // 4
         const downloadURL = await getDownloadURL(imageRef3);
-        await updateDoc(doc(db, "posts", docRef.id), {
-          storyPic: downloadURL,
+        await updateDoc(doc(db, "posts", id), {
+          horizontalPoster: downloadURL,
         });
-      }
-    );
+      });
+    }
 
-    const imageRef4 = ref(storage, `posts/${docRef.id}/directorPic`);
-    await uploadString(imageRef4, selectedFile.directorPic, "data_url").then(
-      async () => {
+    if (change.verticalPoster) {
+      const imageRef3 = ref(storage, `posts/${id}/verticalPoster`);
+      deleteObject(imageRef3);
+      await uploadString(
+        imageRef3,
+        selectedFile.verticalPoster,
+        "data_url"
+      ).then(async () => {
         // 4
-        const downloadURL = await getDownloadURL(imageRef4);
-        await updateDoc(doc(db, "posts", docRef.id), {
-          directorPic: downloadURL,
+        const downloadURL = await getDownloadURL(imageRef3);
+        await updateDoc(doc(db, "posts", id), {
+          verticalPoster: downloadURL,
         });
-      }
-    );
+      });
+    }
 
-    // after uploading set loading false and selected files to null
+    if (change.storyPic) {
+      const imageRef3 = ref(storage, `posts/${id}/storyPic`);
+      deleteObject(imageRef3);
+      await uploadString(imageRef3, selectedFile.storyPic, "data_url").then(
+        async () => {
+          // 4
+          const downloadURL = await getDownloadURL(imageRef3);
+          await updateDoc(doc(db, "posts", id), {
+            storyPic: downloadURL,
+          });
+        }
+      );
+    }
+
+    if (change.directorPic) {
+      const imageRef3 = ref(storage, `posts/${id}/directorPic`);
+      deleteObject(imageRef3);
+      await uploadString(imageRef3, selectedFile.directorPic, "data_url").then(
+        async () => {
+          // 4
+          const downloadURL = await getDownloadURL(imageRef3);
+          await updateDoc(doc(db, "posts", id), {
+            directorPic: downloadURL,
+          });
+        }
+      );
+    }
+
     setLoading(false);
-    setSelectedFile({
-      horizontalPoster: null,
-      verticalPoster: null,
-      storyPic: null,
-      directorPic: null,
-    });
-    setUserInput({
-      moviename: "",
-      details: "",
-      story: "",
-      director: "",
-    });
   };
 
   return (
@@ -306,15 +324,11 @@ function MyPosts() {
           onClick={uploadPost}
           className="bg-red-600 text-white px-8 mx-auto py-2 mt-3 rounded-md"
         >
-          {loading ? "Uploading..." : "Upload Post"}
+          {loading ? "Uploading..." : "Edit Post"}
         </button>
-      </div>
-
-      <div>
-        <AllPosts />
       </div>
     </div>
   );
 }
 
-export default MyPosts;
+export default EditPost;

@@ -12,7 +12,7 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import Blogs from "./Blogs";
+import EditPosts from "./EditPosts";
 
 const AllPosts = () => {
   const [user] = useAuthState(auth);
@@ -37,7 +37,7 @@ const AllPosts = () => {
       </h1>
       <div className="grid sm:grid-2 md:grid-cols-3 gap-2 pl-12 pr-2 md:pl-16 md:pr-4 mb-12  max-w-screen-xl mx-auto">
         {myData.map((post) => (
-          <Blogs key={post.id} post={post} />
+          <EditPosts key={post.id} post={post} />
         ))}
       </div>
     </div>
